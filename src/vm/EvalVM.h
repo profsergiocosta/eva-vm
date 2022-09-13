@@ -9,8 +9,10 @@ Eva virtual Machine
 
 #include <string>
 #include <vector>
+#include <iostream>
 
 #include "../bytecode/opcode.h"
+#include "../../logger.h"
 
 
 #define READ_BYTE() *ip++
@@ -23,7 +25,7 @@ class EvaVM {
 
         void exec (const std::string & program) {
 
-            code = {OP_HALT};
+            code = {5};
 
             ip = &code[0];
 
@@ -32,13 +34,16 @@ class EvaVM {
 
         void eval () {
             for (;;) {
-                switch (READ_BYTE())
+                uint8_t opcode = READ_BYTE();
+                log(opcode);   
+
+                switch (opcode)
                 {
                 case OP_HALT:
                     return;
                 
                 default:
-                    break;
+                    DIE << "unknow code : " << std::hex << +opcode;
                 }
             }
         }
