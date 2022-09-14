@@ -3,19 +3,26 @@ Eva virtual Machine
 
 */
 
-#ifndef __EVAVM_H
-#define __EVAVM_H
+#ifndef EVAVM_H
+#define EVAVM_H
 
 
 #include <string>
 #include <vector>
 #include <iostream>
+#include <array>
+
+
 
 #include "../bytecode/opcode.h"
 #include "../../logger.h"
-
+#include "EvaValue.h"
 
 #define READ_BYTE() *ip++
+
+#define GET_CONST() constants[READ_BYTE()]
+
+#define STACK_LIMIT 512
 
 class EvaVM {
     public:
@@ -23,25 +30,50 @@ class EvaVM {
 
         }
 
-        void exec (const std::string & program) {
+        void push (const EvaValue& value) {
+            if((size_t)(sp-stack.begin()  == STACK_LIMIT)) {
+                 DIE << "push(): Stack overflow.\n"  ; 
+            }
 
-            code = {5};
+            *sp = value;
+            sp++;
+        }
+
+        EvaValue pop () {
+           /// if (stack.size() == 0) {
+            if (sp == stack.begin()) {
+                DIE << "pop(): empty stack.\n";
+            }
+            --sp;
+            return *sp;
+        }
+
+        EvaValue exec (const std::string & program) {
+
+            constants.push_back(NUMBER(42));
+            code = {OP_CONST,0, OP_HALT};
 
             ip = &code[0];
+            sp = &stack[0];
 
             return eval();
         }
 
-        void eval () {
+        EvaValue eval () {
             for (;;) {
                 uint8_t opcode = READ_BYTE();
-                log(opcode);   
 
                 switch (opcode)
                 {
                 case OP_HALT:
-                    return;
+                    return pop();
                 
+                case OP_CONST: {
+                    push (GET_CONST());
+                    break;
+
+                }
+
                 default:
                     DIE << "unknow code : " << std::hex << +opcode;
                 }
@@ -51,7 +83,20 @@ class EvaVM {
         // instruction pointer
         uint8_t* ip;
 
-        std::vector<uint8_t> code;
+        /*
+        constant pool
+        */
+
+       std::vector<EvaValue> constants;
+
+       /*
+       stack pointer
+       */
+      EvaValue* sp;
+
+      std::array<EvaValue,STACK_LIMIT> stack;
+
+       std::vector<uint8_t> code;
 };
 
 #endif
