@@ -17,6 +17,9 @@ Eva virtual Machine
 #include "../bytecode/opcode.h"
 #include "../../logger.h"
 #include "EvaValue.h"
+#include "../parser/EvaParser.h"
+
+using syntax::EvaParser;
 
 #define READ_BYTE() *ip++
 
@@ -33,7 +36,7 @@ do {\
 
 class EvaVM {
     public:
-        EvaVM () {
+        EvaVM  () : parser(std::make_unique<EvaParser>()) {
 
         }
 
@@ -56,6 +59,15 @@ class EvaVM {
         }
 
         EvaValue exec (const std::string & program) {
+
+            //auto ast = parser->parse("\"ola\"");
+            auto ast = parser->parse(program);
+            log(ast.number );
+            std::cout << ast.list[0].string;
+            
+
+            std::cout << "valor " << ast.string << " aqui \n";
+            std::cout << "valor " << ast.number << " aqui \n";
 
             constants.push_back(NUMBER(10));
             constants.push_back(NUMBER(3));
@@ -112,6 +124,8 @@ class EvaVM {
                 }
             }
         }
+
+        std::unique_ptr<EvaParser> parser;
 
         // instruction pointer
         uint8_t* ip;
