@@ -24,6 +24,13 @@ Eva virtual Machine
 
 #define STACK_LIMIT 512
 
+#define BINARY_OP(op) \
+do {\
+    auto op2 = AS_NUMBER (pop());\
+    auto op1 = AS_NUMBER (pop());\
+    push(NUMBER(op1 op op2));\
+} while (false)
+
 class EvaVM {
     public:
         EvaVM () {
@@ -50,10 +57,10 @@ class EvaVM {
 
         EvaValue exec (const std::string & program) {
 
-            constants.push_back(NUMBER(2));
+            constants.push_back(NUMBER(10));
             constants.push_back(NUMBER(3));
 
-            code = {OP_CONST,0,OP_CONST,1, OP_ADD, OP_HALT};
+            code = {OP_CONST,0,OP_CONST,1, OP_SUB, OP_HALT};
 
             ip = &code[0];
             sp = &stack[0];
@@ -77,10 +84,25 @@ class EvaVM {
                 }
 
                 case OP_ADD: {
-                    auto op1 = AS_NUMBER (pop());
-                    auto op2 = AS_NUMBER (pop());
-                    auto result = op1 + op2;
-                    push(NUMBER(result));
+                    BINARY_OP(+);
+                    break;
+
+                }
+
+                case OP_SUB: {
+                    BINARY_OP(-);
+                    break;
+
+                }
+
+                case OP_MUL: {
+                    BINARY_OP(*);
+                    break;
+
+                }
+
+                case OP_DIV: {
+                    BINARY_OP(/);
                     break;
 
                 }
