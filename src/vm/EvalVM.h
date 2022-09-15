@@ -50,8 +50,10 @@ class EvaVM {
 
         EvaValue exec (const std::string & program) {
 
-            constants.push_back(NUMBER(42));
-            code = {OP_CONST,0, OP_HALT};
+            constants.push_back(NUMBER(2));
+            constants.push_back(NUMBER(3));
+
+            code = {OP_CONST,0,OP_CONST,1, OP_ADD, OP_HALT};
 
             ip = &code[0];
             sp = &stack[0];
@@ -70,6 +72,15 @@ class EvaVM {
                 
                 case OP_CONST: {
                     push (GET_CONST());
+                    break;
+
+                }
+
+                case OP_ADD: {
+                    auto op1 = AS_NUMBER (pop());
+                    auto op2 = AS_NUMBER (pop());
+                    auto result = op1 + op2;
+                    push(NUMBER(result));
                     break;
 
                 }

@@ -13,6 +13,10 @@ struct EvaValue {
     };
 };
 
+// constructor
 #define NUMBER(value) ((EvaValue){EvaValueType::NUMBER, .number = value})
+
+// acessor
+#define AS_NUMBER(evaValue) ((double)(evaValue).number)
 
 #endif
