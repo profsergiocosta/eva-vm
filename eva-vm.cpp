@@ -10,7 +10,8 @@ int main(int argc, char const *argv[])
         (+ 10 30)
     )");
 
-    log(result.number);
+    //log(result.number);
+    log(AS_CPPSTRING(result));
     std::cout << "All done!\n";
 
     return 0;

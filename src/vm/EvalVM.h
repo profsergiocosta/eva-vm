@@ -69,10 +69,13 @@ class EvaVM {
             std::cout << "valor " << ast.string << " aqui \n";
             std::cout << "valor " << ast.number << " aqui \n";
 
+            constants.push_back(ALLOC_STRING("Hello"));
+            constants.push_back(ALLOC_STRING(" World"));
             constants.push_back(NUMBER(10));
             constants.push_back(NUMBER(3));
 
-            code = {OP_CONST,0,OP_CONST,1, OP_SUB, OP_HALT};
+            //code = {OP_CONST,0,OP_CONST,1, OP_SUB, OP_HALT};
+            code = {OP_CONST,0, OP_CONST,1, OP_ADD, OP_HALT};
 
             ip = &code[0];
             sp = &stack[0];
@@ -96,7 +99,21 @@ class EvaVM {
                 }
 
                 case OP_ADD: {
-                    BINARY_OP(+);
+                    //BINARY_OP(+);
+                    auto op2 = pop();
+                    auto op1 = pop();
+                    if (IS_NUMBER(op1) && IS_NUMBER(op2)) {
+                        auto v1 = AS_NUMBER(op1);
+                        auto v2 = AS_NUMBER(op2);
+                        push(NUMBER(v1+v2));
+
+                    } else if (IS_STRING(op1) && IS_STRING(op2)) {
+                        auto v1 = AS_CPPSTRING(op1);
+                        auto v2 = AS_CPPSTRING(op2);
+                        push(ALLOC_STRING(v1+v2));
+
+                    }
+
                     break;
 
                 }
