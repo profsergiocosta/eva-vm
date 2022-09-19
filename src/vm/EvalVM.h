@@ -18,12 +18,13 @@ Eva virtual Machine
 #include "../../logger.h"
 #include "EvaValue.h"
 #include "../parser/EvaParser.h"
+#include "../compiler/EvaCompiler.h"
 
 using syntax::EvaParser;
 
 #define READ_BYTE() *ip++
 
-#define GET_CONST() constants[READ_BYTE()]
+#define GET_CONST() co->constants[READ_BYTE()]
 
 #define STACK_LIMIT 512
 
@@ -36,7 +37,7 @@ do {\
 
 class EvaVM {
     public:
-        EvaVM  () : parser(std::make_unique<EvaParser>()) {
+        EvaVM  () : parser(std::make_unique<EvaParser>()), compiler(std::make_unique<EvaCompiler>()) {
 
         }
 
@@ -60,24 +61,11 @@ class EvaVM {
 
         EvaValue exec (const std::string & program) {
 
-            //auto ast = parser->parse("\"ola\"");
             auto ast = parser->parse(program);
-            log(ast.number );
-            std::cout << ast.list[0].string;
-            
 
-            std::cout << "valor " << ast.string << " aqui \n";
-            std::cout << "valor " << ast.number << " aqui \n";
+            co = compiler->compile(ast);
 
-            constants.push_back(ALLOC_STRING("Hello"));
-            constants.push_back(ALLOC_STRING(" World"));
-            constants.push_back(NUMBER(10));
-            constants.push_back(NUMBER(3));
-
-            //code = {OP_CONST,0,OP_CONST,1, OP_SUB, OP_HALT};
-            code = {OP_CONST,0, OP_CONST,1, OP_ADD, OP_HALT};
-
-            ip = &code[0];
+            ip = &co->code[0];
             sp = &stack[0];
 
             return eval();
@@ -144,6 +132,8 @@ class EvaVM {
 
         std::unique_ptr<EvaParser> parser;
 
+        std::unique_ptr<EvaCompiler> compiler;
+
         // instruction pointer
         uint8_t* ip;
 
@@ -151,7 +141,9 @@ class EvaVM {
         constant pool
         */
 
-       std::vector<EvaValue> constants;
+    
+
+        CodeObject* co;
 
        /*
        stack pointer
@@ -160,7 +152,7 @@ class EvaVM {
 
       std::array<EvaValue,STACK_LIMIT> stack;
 
-       std::vector<uint8_t> code;
+    
 };
 
 #endif
