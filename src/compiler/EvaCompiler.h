@@ -5,6 +5,9 @@
 #include "../vm/EvaValue.h"
 #include "../bytecode/opcode.h"
 
+
+#define GEN_BYNARY_OP(op) do {gen(exp.list[1]); gen(exp.list[2]); emit(op);} while (false)
+
 class EvaCompiler
 {
 private:
@@ -26,6 +29,7 @@ public:
 
 
         size_t stringConstIdx(const std::string& value) {
+            
             for (auto i=0; i < co->constants.size(); i++) {
                 if (!IS_STRING(co->constants[i])) {
                     continue;
@@ -90,6 +94,32 @@ void EvaCompiler::gen(const Exp &exp)
         emit(stringConstIdx(exp.string));
         break;
     
+    case ExpType::SYMBOL:
+        /* code */
+        break;
+
+    case ExpType::LIST: {
+        auto tag = exp.list[0];
+
+        if (tag.type == ExpType::SYMBOL) {
+            auto op = tag.string;
+
+            if (op == "+") {
+                GEN_BYNARY_OP(OP_ADD);
+
+            } else if (op == "-") {
+                GEN_BYNARY_OP(OP_SUB);
+            } else if (op == "*") {
+                GEN_BYNARY_OP(OP_MUL);
+            }else if (op == "/") {
+                GEN_BYNARY_OP(OP_DIV);
+            }
+        }
+        break;
+
+    }
+
+
     default:
         break;
     }
