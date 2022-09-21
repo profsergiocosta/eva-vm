@@ -43,6 +43,23 @@ public:
 
         }
 
+        //booleanConstIdx
+
+        size_t booleanConstIdx(bool value) {
+            
+            for (auto i=0; i < co->constants.size(); i++) {
+                if (!IS_BOOLEAN(co->constants[i])) {
+                    continue;
+                }
+                if (AS_BOOLEAN (co->constants[i])== value) {
+                    return i;
+                }
+            }
+            co->constants.push_back(BOOLEAN(value));
+            return co->constants.size() -1;
+
+        }
+
         size_t numericConstIdx(double value) {
             for (auto i=0; i < co->constants.size(); i++) {
                 if (!IS_NUMBER(co->constants[i])) {
@@ -95,7 +112,13 @@ void EvaCompiler::gen(const Exp &exp)
         break;
     
     case ExpType::SYMBOL:
-        /* code */
+        if (exp.string == "true" || exp.string == "false") {
+            emit(OP_CONST);
+            emit(booleanConstIdx( exp.string == "true" ? true: false));
+
+        } else {
+            //variable
+        }
         break;
 
     case ExpType::LIST: {
