@@ -7,7 +7,7 @@ int main(int argc, char const *argv[])
     EvaVM vm;
 
     auto result = vm.exec (R"(
-        true
+        (> 10 50)
     )");
 
     //log(AS_NUMBER(result));

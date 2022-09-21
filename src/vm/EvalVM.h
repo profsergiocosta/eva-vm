@@ -28,12 +28,27 @@ using syntax::EvaParser;
 
 #define STACK_LIMIT 512
 
+
+
 #define BINARY_OP(op) \
 do {\
     auto op2 = AS_NUMBER (pop());\
     auto op1 = AS_NUMBER (pop());\
     push(NUMBER(op1 op op2));\
 } while (false)
+
+template<typename T>
+bool compareNumValue (int op, T v1, T v2) {
+    switch (op) {
+        case 0: return v1 < v2;
+        case 1: return v1 > v2;
+        case 2: return v1 == v2;
+        case 3: return v1 >= v2;
+        case 4: return v1 <= v2;
+        case 5: return v1 != v2;
+    }
+    return false;
+}
 
 class EvaVM {
     public:
@@ -124,6 +139,26 @@ class EvaVM {
 
                 }
 
+                case OP_COMPARE :{
+                    auto op = READ_BYTE();
+
+                    auto op2 = pop();
+                    auto op1 = pop();
+
+                    if (IS_NUMBER(op1) && (IS_NUMBER(op2))) {
+                        auto v1 = AS_NUMBER(op1);
+                        auto v2 = AS_NUMBER(op2);
+                        auto r = compareNumValue(op, v1, v2);
+                        push(BOOLEAN(r));
+                    } else if (IS_STRING(op1) && (IS_STRING(op2))) {
+                        auto v1 = AS_CPPSTRING(op1);
+                        auto v2 = AS_CPPSTRING(op2);
+                        auto r = compareNumValue(op, v1, v2);
+                        push(BOOLEAN(r));
+                    }
+                    break;
+                }
+
                 default:
                     DIE << "unknow code : " << std::hex << +opcode;
                 }
@@ -152,7 +187,12 @@ class EvaVM {
 
       std::array<EvaValue,STACK_LIMIT> stack;
 
+
+
+
     
 };
+
+
 
 #endif

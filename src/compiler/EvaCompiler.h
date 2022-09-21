@@ -5,6 +5,9 @@
 #include "../vm/EvaValue.h"
 #include "../bytecode/opcode.h"
 
+#include <map>
+#include <string>
+
 
 #define GEN_BYNARY_OP(op) do {gen(exp.list[1]); gen(exp.list[2]); emit(op);} while (false)
 
@@ -74,6 +77,12 @@ public:
 
         }
     CodeObject *co;
+
+    static std::map<std::string, uint8_t> compareOps_;
+};
+
+std::map<std::string, uint8_t> EvaCompiler::compareOps_ = {
+    {"<", 0},{">", 1},{"==", 2},{">=", 3},{"<=", 4},{"!=", 5},
 };
 
 EvaCompiler::EvaCompiler(/* args */)
@@ -136,6 +145,11 @@ void EvaCompiler::gen(const Exp &exp)
                 GEN_BYNARY_OP(OP_MUL);
             }else if (op == "/") {
                 GEN_BYNARY_OP(OP_DIV);
+            } else if (compareOps_.count(op) != 0) {
+                gen(exp.list[1]);
+                gen(exp.list[2]);
+                emit(OP_COMPARE);
+                emit(compareOps_[op]);
             }
         }
         break;
