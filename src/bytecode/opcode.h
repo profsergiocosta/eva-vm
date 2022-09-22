@@ -14,4 +14,7 @@
 
 #define OP_COMPARE 0x06
 
+#define OP_JMP_IF_FALSE 0x07
+#define OP_JMP 0x08
+
 #endif

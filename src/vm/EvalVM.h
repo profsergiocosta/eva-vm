@@ -24,10 +24,13 @@ using syntax::EvaParser;
 
 #define READ_BYTE() *ip++
 
-#define GET_CONST() co->constants[READ_BYTE()]
+#define GET_CONST() (co->constants[READ_BYTE()])
 
 #define STACK_LIMIT 512
 
+#define READ_SHORT() (ip += 2, (uint16_t)((ip[-2] <<8) | ip[-1]))
+
+#define TO_ADDRESS(index) (&co->code[index])
 
 
 #define BINARY_OP(op) \
@@ -156,6 +159,22 @@ class EvaVM {
                         auto r = compareNumValue(op, v1, v2);
                         push(BOOLEAN(r));
                     }
+                    break;
+                }
+
+                case OP_JMP_IF_FALSE : {
+                    auto cond = AS_BOOLEAN(pop());
+
+                    auto address = READ_SHORT();
+
+                    if (!cond) {
+                        ip = TO_ADDRESS(address);
+                    }
+                    break;
+                }
+
+                case OP_JMP : {
+                     ip = TO_ADDRESS(READ_SHORT());
                     break;
                 }
 

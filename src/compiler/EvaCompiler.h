@@ -76,6 +76,19 @@ public:
             return co->constants.size() -1;
 
         }
+
+        size_t getOffSet() { return co->code.size(); }
+
+        void writeByteAtOffset(size_t offset, uint8_t value) {
+            co->code[offset] = value;
+        }
+
+        void patchJumpAddress (size_t offset, u_int16_t value ) {
+            writeByteAtOffset(offset, (value >> 8) & 0xff);
+            writeByteAtOffset(offset+1, value & 0xff);
+
+
+        }
     CodeObject *co;
 
     static std::map<std::string, uint8_t> compareOps_;
@@ -150,6 +163,45 @@ void EvaCompiler::gen(const Exp &exp)
                 gen(exp.list[2]);
                 emit(OP_COMPARE);
                 emit(compareOps_[op]);
+            }
+
+            else if (op == "if") {
+                // emit <test>
+                gen(exp.list[1]);
+
+                // else branch, init with 0 addres, will be patched
+                emit(OP_JMP_IF_FALSE);
+
+                
+                // two bytes, considering large programs
+                emit(0);
+                emit(0);
+
+                auto elseJmpAdr = getOffSet() - 2;
+
+                // emit consequent
+                gen (exp.list[2]);
+
+                emit(OP_JMP);
+
+                // two bytes, considering large programs
+                emit(0);
+                emit(0);
+
+                auto endAddr = getOffSet() - 2;
+                auto elseBranchAddr = getOffSet();
+
+                patchJumpAddress(elseJmpAdr,elseBranchAddr);
+
+                // emit alternative
+                if (exp.list.size() == 4) {
+                    gen(exp.list[3]);
+                }
+
+                // patch end
+                auto endBranchAddr = getOffSet();
+                patchJumpAddress(endAddr,endBranchAddr);
+
             }
         }
         break;
