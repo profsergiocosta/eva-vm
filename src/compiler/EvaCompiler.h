@@ -4,7 +4,7 @@
 #include "../parser/EvaParser.h"
 #include "../vm/EvaValue.h"
 #include "../bytecode/opcode.h"
-
+#include "../disassembler/evadisassembler.h"
 #include <map>
 #include <string>
 
@@ -16,13 +16,20 @@ class EvaCompiler
 private:
     /* data */
 public:
-    EvaCompiler(/* args */);
-    ~EvaCompiler();
+    EvaCompiler(/* args */): disassembler(std::make_unique<EvaDisassembler>()) {};
+    ~EvaCompiler() {};
 
     CodeObject *compile(const Exp &exp);
     void gen (const Exp &exp);
 
+    void disassembleByteCode () {
+        disassembler->disassemble(co);
+    }
+
     private:
+
+        std::unique_ptr<EvaDisassembler> disassembler;
+
         void emit (uint8_t code) {
             co->code.push_back(code);
 
@@ -98,13 +105,7 @@ std::map<std::string, uint8_t> EvaCompiler::compareOps_ = {
     {"<", 0},{">", 1},{"==", 2},{">=", 3},{"<=", 4},{"!=", 5},
 };
 
-EvaCompiler::EvaCompiler(/* args */)
-{
-}
 
-EvaCompiler::~EvaCompiler()
-{
-}
 
 CodeObject *EvaCompiler::compile(const Exp &exp)
 {

@@ -86,6 +86,8 @@ class EvaVM {
             ip = &co->code[0];
             sp = &stack[0];
 
+            compiler->disassembleByteCode();
+
             return eval();
         }
 

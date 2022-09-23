@@ -6,6 +6,7 @@ int main(int argc, char const *argv[])
 {
     EvaVM vm;
 
+    //(if (< 5 10) 1 2)
     auto result = vm.exec (R"(
         (if (< 5 10) 1 2)
     )");
