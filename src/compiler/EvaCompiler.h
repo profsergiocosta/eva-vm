@@ -26,6 +26,10 @@ public:
         disassembler->disassemble(co);
     }
 
+    void printByteCode() {
+        disassembler->printByteCode(co);
+    }
+
     private:
 
         std::unique_ptr<EvaDisassembler> disassembler;

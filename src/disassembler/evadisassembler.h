@@ -10,6 +10,19 @@ class EvaDisassembler {
 
     public:
 
+    void printByteCode (CodeObject* co) {
+        std::cout << "\n -------------- ByteCode: " << co->name
+                    << " ----------------\n\n";
+
+        size_t offset = 0;
+        while (offset < co->code.size()) {
+            std::cout << std::uppercase << std::hex  <<  std::setfill('0') << std::setw(4) 
+                << (int)co->code[offset] << " ";
+            //std::cout << "\n" ;
+            offset++;
+        }
+    }
+
     void disassemble (CodeObject* co) {
         std::cout << "\n -------------- Disassembly: " << co->name
                     << " ----------------\n\n";
