@@ -81,6 +81,13 @@ class EvaVM {
             return *sp;
         }
 
+        EvaValue peek (size_t offset=0) {
+            if (sp == stack.begin()) {
+                DIE << "peek(): empty stack.\n";
+            }
+            return *(sp-1-offset);
+        }
+
         EvaValue exec (const std::string & program) {
 
             auto ast = parser->parse(program);
@@ -185,10 +192,17 @@ class EvaVM {
                     break;
                 }
 
-                 case OP_GET_GLOBAL : {
+                case OP_GET_GLOBAL : {
                      int globalIndex = READ_BYTE(); // o auto nao estao funcionando bem em alguns casos
                      push(global->get(globalIndex).value);
                       
+                    break;
+                }
+
+                case OP_SET_GLOBAL : {
+                    int  globalIndex = READ_BYTE(); 
+                    auto value = peek(0);
+                    global->set(globalIndex, value);
                     break;
                 }
 

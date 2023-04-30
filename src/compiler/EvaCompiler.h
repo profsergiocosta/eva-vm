@@ -221,6 +221,29 @@ void EvaCompiler::gen(const Exp &exp)
                 patchJumpAddress(endAddr,endBranchAddr);
 
             }
+
+            else if (op == "var") {
+                global->define(exp.list[1].string);
+
+                gen(exp.list[2]);
+
+                emit(OP_SET_GLOBAL);
+                emit(global->getGlobalIndex(exp.list[1].string));
+            }
+
+
+                else if (op == "set") {
+                    auto varname = exp.list[1].string;
+
+                    gen(exp.list[2]);
+                    
+                    int globalIndex = global->getGlobalIndex(varname);
+                    if (globalIndex == -1) {
+                        DIE << "Reference error: " << varname << " is not defined.";
+                    }
+                    emit(OP_SET_GLOBAL);
+                    emit(globalIndex);
+               }
         }
         break;
 
