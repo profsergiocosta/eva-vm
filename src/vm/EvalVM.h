@@ -185,6 +185,13 @@ class EvaVM {
                     break;
                 }
 
+                 case OP_GET_GLOBAL : {
+                     int globalIndex = READ_BYTE(); // o auto nao estao funcionando bem em alguns casos
+                     push(global->get(globalIndex).value);
+                      
+                    break;
+                }
+
                 default:
                     DIE << "unknow code : " << std::hex << +opcode;
                 }
@@ -194,7 +201,7 @@ class EvaVM {
         void setGlobalVariables() {
             
             global->addConst("x", 10);
-            global->addConst("y", 10);
+            global->addConst("y", 45);
         }
 
         std::shared_ptr<Global> global;

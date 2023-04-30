@@ -155,7 +155,9 @@ void EvaCompiler::gen(const Exp &exp)
             }
 
             emit(OP_GET_GLOBAL);
-            emit(global->getGlobalIndex(exp.string));
+            auto num = global->getGlobalIndex(exp.string);
+            std::cout << "emit " << num << std::endl;
+            emit(num);
         }
         break;
 

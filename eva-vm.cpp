@@ -8,7 +8,7 @@ int main(int argc, char const *argv[])
 
     //(if (< 5 10) 1 2)
     auto result = vm.exec (R"(
-        x
+        y
     )");
 
 /*

@@ -56,6 +56,8 @@ struct Global
         }
         
         _globals.push_back({name, NUMBER(value)});
+
+        std::cout <<  name << " " << value << std::endl;
     }
 
     int getGlobalIndex (const std::string& name) {
