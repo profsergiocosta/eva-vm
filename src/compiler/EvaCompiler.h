@@ -16,7 +16,9 @@ class EvaCompiler
 private:
     /* data */
 public:
-    EvaCompiler(/* args */): disassembler(std::make_unique<EvaDisassembler>()) {};
+    EvaCompiler(std::shared_ptr<Global> global): 
+    global(global),
+    disassembler(std::make_unique<EvaDisassembler>(global)) {};
     ~EvaCompiler() {};
 
     CodeObject *compile(const Exp &exp);
@@ -31,8 +33,10 @@ public:
     }
 
     private:
-
+        std::shared_ptr<Global> global;
+        
         std::unique_ptr<EvaDisassembler> disassembler;
+        
 
         void emit (uint8_t code) {
             co->code.push_back(code);
@@ -145,6 +149,13 @@ void EvaCompiler::gen(const Exp &exp)
 
         } else {
             //variable
+
+            if (!global->exists(exp.string)) {
+                DIE << "[EvaCompiler]: Reference error " << exp.string;
+            }
+
+            emit(OP_GET_GLOBAL);
+            emit(global->getGlobalIndex(exp.string));
         }
         break;
 

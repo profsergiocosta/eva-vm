@@ -19,6 +19,7 @@ Eva virtual Machine
 #include "EvaValue.h"
 #include "../parser/EvaParser.h"
 #include "../compiler/EvaCompiler.h"
+#include "Global.h"
 
 using syntax::EvaParser;
 
@@ -55,8 +56,11 @@ bool compareNumValue (int op, T v1, T v2) {
 
 class EvaVM {
     public:
-        EvaVM  () : parser(std::make_unique<EvaParser>()), compiler(std::make_unique<EvaCompiler>()) {
-
+        EvaVM  () : 
+         global(std::make_shared<Global>()),
+         parser(std::make_unique<EvaParser>()),
+         compiler(std::make_unique<EvaCompiler>(global)) {
+            setGlobalVariables();
         }
 
         void push (const EvaValue& value) {
@@ -186,6 +190,14 @@ class EvaVM {
                 }
             }
         }
+
+        void setGlobalVariables() {
+            
+            global->addConst("x", 10);
+            global->addConst("y", 10);
+        }
+
+        std::shared_ptr<Global> global;
 
         std::unique_ptr<EvaParser> parser;
 
