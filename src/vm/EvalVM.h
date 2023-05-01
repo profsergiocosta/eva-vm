@@ -206,6 +206,10 @@ class EvaVM {
                     break;
                 }
 
+                case OP_POP:
+                    pop();
+                    break;
+
                 default:
                     DIE << "unknow code : " << std::hex << +opcode;
                 }
@@ -214,7 +218,7 @@ class EvaVM {
 
         void setGlobalVariables() {
             
-            global->addConst("x", 10);
+            global->addConst("VERSION", 1);
             global->addConst("y", 45);
         }
 

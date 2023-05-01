@@ -22,6 +22,8 @@
 
 #define OP_SET_GLOBAL 0x10
 
+#define OP_POP 0x11
+
 #define OP_STR(op) \
     case OP_##op: \
         return #op
@@ -40,6 +42,7 @@ std::string opcodeToString(uint8_t opcode) {
         OP_STR(JMP);
         OP_STR(GET_GLOBAL);
         OP_STR(SET_GLOBAL);
+        OP_STR(POP);
         
         default:
             DIE << "opcodetosting: unknow opcode " << (int)opcode;

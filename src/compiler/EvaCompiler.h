@@ -249,9 +249,15 @@ void EvaCompiler::gen(const Exp &exp)
              else if (op == "begin") {
 
                 // compile each expression within the block
-
                 for (int i = 1; i < exp.list.size(); i++) {
+
+                    bool isLast = i == exp.list.size() - 1;
+
                     gen(exp.list[i]);
+
+                    if (!isLast) {
+                        emit(OP_POP);
+                    }
                 }
              }
 
