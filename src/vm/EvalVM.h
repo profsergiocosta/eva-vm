@@ -90,7 +90,7 @@ class EvaVM {
 
         EvaValue exec (const std::string & program) {
 
-            auto ast = parser->parse(program);
+            auto ast = parser->parse("(begin " + program + ")");
 
             co = compiler->compile(ast);
 

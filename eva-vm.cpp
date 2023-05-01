@@ -8,7 +8,8 @@ int main(int argc, char const *argv[])
 
     //(if (< 5 10) 1 2)
     auto result = vm.exec (R"(
-        (set x (+ x 10)) 
+        (var k 50)
+        (set x (+ x k)) 
     )");
 
 /*

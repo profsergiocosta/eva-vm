@@ -232,7 +232,7 @@ void EvaCompiler::gen(const Exp &exp)
             }
 
 
-                else if (op == "set") {
+            else if (op == "set") {
                     auto varname = exp.list[1].string;
 
                     gen(exp.list[2]);
@@ -243,7 +243,18 @@ void EvaCompiler::gen(const Exp &exp)
                     }
                     emit(OP_SET_GLOBAL);
                     emit(globalIndex);
-               }
+             }
+
+
+             else if (op == "begin") {
+
+                // compile each expression within the block
+
+                for (int i = 1; i < exp.list.size(); i++) {
+                    gen(exp.list[i]);
+                }
+             }
+
         }
         break;
 
